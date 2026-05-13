@@ -1,6 +1,6 @@
 # Stackable Shulker Automation
 
-NeoForge 1.21.1 server-compatible mod that makes shulker boxes stack up to 64 everywhere while still requiring identical item data.
+NeoForge 1.21.1 server-compatible mod that makes identical vanilla shulker boxes stack up to 64 everywhere by patching the shulker box item default `minecraft:max_stack_size` component.
 
 ## Behavior
 
@@ -8,8 +8,18 @@ NeoForge 1.21.1 server-compatible mod that makes shulker boxes stack up to 64 ev
 - Different color does not stack.
 - Different contents do not stack.
 - Different custom name, lock data, loot table data, or other meaningful components do not stack.
-- Hoppers, crafters, Pretty Pipes, vanilla inventories, and dropped item merging use the same rule because the core ItemStack stack limit/equality behavior is patched.
-- The old `minecraft:max_stack_size` datapack component is ignored for shulker comparison only, so shulkers previously touched by the datapack can merge with fresh shulkers when every meaningful property matches.
+- Hoppers, crafters, Pretty Pipes, vanilla inventories, and dropped item merging use the same server-side max-stack-size rule.
+- The old Stackable Shulker Boxes datapack is no longer required.
+
+## How this version works
+
+Version 1.0.1 uses NeoForge's `ModifyDefaultComponentsEvent` to patch all vanilla shulker box item defaults to `DataComponents.MAX_STACK_SIZE = 64`. This is more reliable than trying to override `ItemStack#getMaxStackSize` with a mixin.
+
+On server startup, the log should include a line like:
+
+```text
+Stackable Shulker Automation patched 17 shulker box item(s) to max stack size 64.
+```
 
 ## Installation
 
@@ -18,15 +28,15 @@ NeoForge 1.21.1 server-compatible mod that makes shulker boxes stack up to 64 ev
 3. Remove the old Stackable Shulker Boxes datapack.
 4. Restart the server.
 
-The mod is safe to install on clients too, but it is designed so the server can run it without requiring players to install it.
+The mod is safe to install on clients too, but it is designed so the server can run it without requiring every player to install it. Client installation may make manual inventory interactions feel more visually consistent, but server automation behavior is handled server-side.
 
 ## Testing checklist
 
-1. Craft or give two shulker boxes of the same color.
-2. Put identical contents inside both.
-3. Confirm they stack manually.
-4. Put them through a hopper into a chest and confirm the chest merges them.
-5. Put them through Pretty Pipes and confirm the target inventory merges them.
-6. Confirm different colors do not stack.
-7. Confirm same color but different contents do not stack.
-8. Confirm shulkers previously created by the datapack can stack with newly created shulkers when their real data matches.
+1. Confirm the server log says it patched 17 shulker box item(s).
+2. Craft or give two shulker boxes of the same color.
+3. Put identical contents inside both, or test two empty shulkers first.
+4. Confirm they stack manually.
+5. Put them through a hopper/crafter into a chest and confirm the chest merges them.
+6. Put them through Pretty Pipes and confirm the target inventory merges them.
+7. Confirm different colors do not stack.
+8. Confirm same color but different contents do not stack.
